@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Volume2, ShieldCheck, Check, Sparkles, Mic, Play, Loader2, Smile, Target, AlertCircle, Zap } from 'lucide-react';
+import { X, Volume2, ShieldCheck, Check, Sparkles, Mic, Play, Loader2, Smile, Target, AlertCircle, Zap, Palette } from 'lucide-react';
 import { ATOM_VOICES, VoiceOption, atomAudio, VoiceEmotion } from '../utils/audio';
+import { ACCENT_THEMES, AccentColorId } from '../utils/theme';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -15,6 +16,8 @@ interface SettingsModalProps {
   onToggleWakeWord?: () => void;
   selectedEmotionMode: string;
   onSelectEmotionMode: (mode: string) => void;
+  accentColor?: AccentColorId;
+  onSelectAccentColor?: (color: AccentColorId) => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -30,6 +33,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onToggleWakeWord,
   selectedEmotionMode,
   onSelectEmotionMode,
+  accentColor = 'cyan',
+  onSelectAccentColor,
 }) => {
   const [testingVoice, setTestingVoice] = useState<string | null>(null);
 
@@ -95,6 +100,54 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Content */}
         <div className="space-y-4 py-4">
+          {/* Primary Accent Color Selector */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-300 uppercase tracking-wider">
+                <Palette className="w-3.5 h-3.5" />
+                <span>ธีมสีหลักของแอป (Primary Accent Color)</span>
+              </label>
+              <span className="text-[10px] font-mono text-slate-400">บันทึกลง localStorage</span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {Object.values(ACCENT_THEMES).map((theme) => {
+                const isSelected = accentColor === theme.id;
+                return (
+                  <button
+                    key={theme.id}
+                    type="button"
+                    onClick={() => onSelectAccentColor && onSelectAccentColor(theme.id)}
+                    className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-all relative overflow-hidden ${
+                      isSelected
+                        ? 'bg-slate-900 border-white/60 shadow-lg ring-1 ring-white/40'
+                        : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-500 hover:bg-slate-800/70'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className="w-3.5 h-3.5 rounded-full border border-white/30 shadow-sm"
+                          style={{
+                            backgroundColor: theme.hex,
+                            boxShadow: isSelected ? `0 0 10px ${theme.hex}` : 'none',
+                          }}
+                        />
+                        <span className="font-medium text-xs text-white truncate">{theme.name.split(' ')[0]}</span>
+                      </div>
+                      {isSelected && (
+                        <span className="p-0.5 rounded-full bg-white text-slate-950">
+                          <Check className="w-2.5 h-2.5 stroke-[3]" />
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-slate-400 leading-tight truncate w-full">{theme.enName}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Voice Emotional States Mode */}
           <div>
             <label className="block text-xs font-semibold text-cyan-300 uppercase tracking-wider mb-2">

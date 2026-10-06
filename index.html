@@ -6,17 +6,54 @@
     <script>
       // Follow environment instruction: HMR is disabled in preview iframe; ignore websocket errors
       (() => {
+        const isIgnored = (args) => {
+          try {
+            for (let i = 0; i < args.length; i++) {
+              const item = args[i];
+              const str = typeof item === 'string' ? item : (item?.message || item?.toString?.() || '');
+              if (str.includes('[vite]') || /websocket/i.test(str)) {
+                return true;
+              }
+            }
+          } catch {
+            // ignore
+          }
+          return false;
+        };
+
         const _origError = console.error;
         console.error = function (...args) {
-          if (
-            typeof args[0] === 'string' &&
-            (args[0].includes('[vite]') || args[0].includes('websocket') || args[0].includes('WebSocket'))
-          ) {
-            console.warn(...args);
-            return;
-          }
+          if (isIgnored(args)) return;
           _origError.apply(console, args);
         };
+
+        const _origWarn = console.warn;
+        console.warn = function (...args) {
+          if (isIgnored(args)) return;
+          _origWarn.apply(console, args);
+        };
+
+        const _origLog = console.log;
+        console.log = function (...args) {
+          if (isIgnored(args)) return;
+          _origLog.apply(console, args);
+        };
+
+        window.addEventListener('error', (e) => {
+          const msg = e.message || '';
+          if (msg.includes('[vite]') || /websocket/i.test(msg)) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', (e) => {
+          const reason = String(e.reason?.message || e.reason || '');
+          if (reason.includes('[vite]') || /websocket/i.test(reason)) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }, true);
       })();
     </script>
     <title>ATOM (อะตอม) - ระบบผู้ช่วยเสียง AI</title>

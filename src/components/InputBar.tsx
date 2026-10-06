@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mic, Send, Plus, X, Sparkles, Code2, Trash2, Smile, Target, AlertCircle, Paperclip, FileText, Image as ImageIcon, FileCode, FileArchive, Film, Music, UploadCloud } from 'lucide-react';
+import { Mic, Send, Plus, X, Sparkles, Code2, Trash2, Smile, Target, AlertCircle, Paperclip, FileText, Image as ImageIcon, FileCode, FileArchive, Film, Music, UploadCloud, Brain, Terminal, MapPin } from 'lucide-react';
 import { AttachedFile } from './MessageItem';
 
 interface InputBarProps {
@@ -11,6 +11,7 @@ interface InputBarProps {
   isProcessing: boolean;
   onClearHistory: () => void;
   onInsertCodeTemplate: (code: string) => void;
+  onOpenSupermemory?: () => void;
 }
 
 export const InputBar: React.FC<InputBarProps> = ({
@@ -21,16 +22,56 @@ export const InputBar: React.FC<InputBarProps> = ({
   liveTranscript,
   isProcessing,
   onClearHistory,
+  onOpenSupermemory,
 }) => {
   const [inputText, setInputText] = useState('');
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Command History states (Last 20 prompts in jarvis_core via Supermemory API)
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const [draftText, setDraftText] = useState<string>('');
+
   const inputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  // Load command history on mount
+  useEffect(() => {
+    // 1. Load from localStorage
+    try {
+      const saved = localStorage.getItem('atom_command_history');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setCommandHistory(parsed.slice(-20));
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse atom_command_history from localStorage:', e);
+    }
+
+    // 2. Sync with jarvis_core in Supermemory API
+    fetch('/api/supermemory/command-history')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.history) && data.history.length > 0) {
+          setCommandHistory((prev) => {
+            const combined = Array.from(new Set([...prev, ...data.history])).slice(-20);
+            try {
+              localStorage.setItem('atom_command_history', JSON.stringify(combined));
+            } catch (err) {}
+            return combined;
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to fetch command history from jarvis_core:', err);
+      });
+  }, []);
 
   useEffect(() => {
     if (isListening && liveTranscript) {
@@ -133,6 +174,36 @@ export const InputBar: React.FC<InputBarProps> = ({
 
     const textToSend = trimmed || (attachedFiles.length > 0 ? defaultPrompt : '');
     onSendMessage(textToSend, undefined, attachedFiles.length > 0 ? [...attachedFiles] : undefined);
+
+    if (trimmed) {
+      // 1. Update local command history (last 20 unique prompts, latest at end)
+      const updatedHistory = [...commandHistory.filter((c) => c !== trimmed), trimmed].slice(-20);
+      setCommandHistory(updatedHistory);
+      try {
+        localStorage.setItem('atom_command_history', JSON.stringify(updatedHistory));
+      } catch (e) {}
+
+      // 2. Save into 'jarvis_core' using the Supermemory API
+      fetch('/api/supermemory/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          containerTag: 'jarvis_core',
+          content: `[COMMAND_HISTORY]: ${trimmed}`,
+          metadata: {
+            type: 'command_history',
+            prompt: trimmed,
+            timestamp: new Date().toISOString(),
+          },
+          dreaming: 'instant',
+        }),
+      }).catch((err) => {
+        console.warn('Failed to commit command history to jarvis_core:', err);
+      });
+    }
+
+    setHistoryIndex(-1);
+    setDraftText('');
     setInputText('');
     setAttachedFiles([]);
   };
@@ -160,6 +231,51 @@ export const InputBar: React.FC<InputBarProps> = ({
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+      return;
+    }
+
+    // Up Arrow key: cycle through previous commands in history
+    if (e.key === 'ArrowUp') {
+      if (commandHistory.length === 0) return;
+      e.preventDefault();
+
+      if (historyIndex === -1) {
+        // Save current draft before cycling
+        setDraftText(inputText);
+        const lastIdx = commandHistory.length - 1;
+        setHistoryIndex(lastIdx);
+        setInputText(commandHistory[lastIdx]);
+      } else if (historyIndex > 0) {
+        const prevIdx = historyIndex - 1;
+        setHistoryIndex(prevIdx);
+        setInputText(commandHistory[prevIdx]);
+      }
+      return;
+    }
+
+    // Down Arrow key: cycle forward in history
+    if (e.key === 'ArrowDown') {
+      if (historyIndex === -1) return;
+      e.preventDefault();
+
+      if (historyIndex < commandHistory.length - 1) {
+        const nextIdx = historyIndex + 1;
+        setHistoryIndex(nextIdx);
+        setInputText(commandHistory[nextIdx]);
+      } else {
+        // Reached end, restore draft
+        setHistoryIndex(-1);
+        setInputText(draftText);
+      }
+      return;
+    }
+
+    // Escape key: exit command cycling
+    if (e.key === 'Escape' && historyIndex !== -1) {
+      e.preventDefault();
+      setHistoryIndex(-1);
+      setInputText(draftText);
+      return;
     }
   };
 
@@ -283,6 +399,31 @@ export const InputBar: React.FC<InputBarProps> = ({
         </div>
       )}
 
+      {/* Command History Cycling Indicator Banner */}
+      {historyIndex !== -1 && (
+        <div className="mb-2 flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-blue-950/80 border border-blue-500/40 text-xs text-blue-200 animate-in fade-in slide-in-from-bottom-1">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-900/80 border border-blue-400/50 text-blue-300 shrink-0 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+              <span>ประวัติคำสั่ง {commandHistory.length - historyIndex}/{commandHistory.length}</span>
+            </span>
+            <span className="truncate text-slate-300 font-sans text-[11px]">
+              กด ↑ / ↓ เพื่อวนดูคำสั่ง · Esc ยกเลิก
+            </span>
+          </div>
+          <button
+            onClick={() => {
+              setHistoryIndex(-1);
+              setInputText(draftText);
+            }}
+            className="p-1 hover:bg-blue-900/60 rounded text-slate-400 hover:text-white"
+            title="ยกเลิกการเลือกประวัติ"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Main input controls container */}
       <div className="flex items-center gap-2">
         {/* Plus / Tools button */}
@@ -301,6 +442,30 @@ export const InputBar: React.FC<InputBarProps> = ({
               <div className="px-2 py-1 text-[11px] font-mono text-cyan-400/80 border-b border-slate-800/80 mb-1">
                 A.T.O.M. COMMAND & EMOTIONS
               </div>
+
+              {onOpenSupermemory && (
+                <button
+                  onClick={() => {
+                    onOpenSupermemory();
+                    setShowToolsMenu(false);
+                  }}
+                  className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-cyan-300 hover:bg-cyan-950/80 transition-colors text-left border-b border-slate-800/80 mb-1 font-medium"
+                >
+                  <Brain className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <span>จัดการ Supermemory (jarvis_core)</span>
+                </button>
+              )}
+
+              <button
+                onClick={() => {
+                  onSendMessage('แนะนำร้านอาหารและคาเฟ่ยอดนิยมใกล้ฉัน พร้อมหมุดและเส้นทางบน Google Maps');
+                  setShowToolsMenu(false);
+                }}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-emerald-300 hover:bg-emerald-950/60 hover:text-emerald-200 transition-colors text-left font-medium"
+              >
+                <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>ค้นหาสถานที่ & ปักหมุด (Google Maps)</span>
+              </button>
 
               <button
                 onClick={() => {

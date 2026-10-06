@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Volume2, Copy, Check, Terminal, ExternalLink, Pause, Smile, Target, AlertCircle, Play, XCircle, FileText, Image as ImageIcon, FileCode } from 'lucide-react';
+import { Volume2, Copy, Check, Terminal, ExternalLink, Pause, Smile, Target, AlertCircle, Play, XCircle, FileText, Image as ImageIcon, FileCode, MapPin, Globe, Sparkles } from 'lucide-react';
 import { VoiceEmotion } from '../utils/audio';
 
 export interface AttachedFile {
@@ -12,6 +12,13 @@ export interface AttachedFile {
   previewUrl?: string;
 }
 
+export interface MapsSource {
+  title: string;
+  uri: string;
+  address?: string;
+  reviewSnippets?: string[];
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'model';
@@ -19,6 +26,8 @@ export interface Message {
   emotion?: VoiceEmotion;
   audio?: string | null;
   sources?: { title: string; uri: string }[];
+  mapsSources?: MapsSource[];
+  imageUrl?: string;
   timestamp: string;
   isStreaming?: boolean;
   files?: AttachedFile[];
@@ -401,6 +410,67 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         <div className="text-slate-200 leading-relaxed font-sans">
           {renderFormattedContent(message.text)}
         </div>
+
+        {/* AI-Generated Image from Gemini */}
+        {!isUser && message.imageUrl && (
+          <div className="mt-3 overflow-hidden rounded-xl border border-cyan-500/30 bg-black/40">
+            <div className="flex items-center justify-between px-3 py-1.5 bg-cyan-950/40 border-b border-cyan-500/20 text-xs text-cyan-300">
+              <span className="flex items-center gap-1.5 font-tech text-[11px]">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                <span>ภาพสร้างจาก Gemini Vision Engine (1K)</span>
+              </span>
+              <a
+                href={message.imageUrl}
+                download="atom-gemini-art.png"
+                className="text-[10px] text-cyan-400 hover:text-cyan-200 underline"
+              >
+                ดาวน์โหลดภาพ
+              </a>
+            </div>
+            <img
+              src={message.imageUrl}
+              alt="Gemini Generated Artwork"
+              className="w-full max-h-[380px] object-contain mx-auto"
+            />
+          </div>
+        )}
+
+        {/* Google Maps Grounding Cards */}
+        {!isUser && message.mapsSources && message.mapsSources.length > 0 && (
+          <div className="mt-3.5 pt-2.5 border-t border-emerald-500/20 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+              <MapPin className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+              <span>พิกัดและสถานที่จาก Google Maps ({message.mapsSources.length} แห่ง):</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {message.mapsSources.map((mapItem, idx) => (
+                <a
+                  key={idx}
+                  href={mapItem.uri}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 hover:border-emerald-400 hover:bg-emerald-950/60 transition-all text-xs group"
+                >
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <span className="font-bold text-white group-hover:text-emerald-300 truncate">
+                      {mapItem.title}
+                    </span>
+                    <ExternalLink className="w-3 h-3 text-emerald-400 shrink-0" />
+                  </div>
+                  {mapItem.address && (
+                    <span className="text-[11px] text-slate-300 leading-tight mb-1 line-clamp-2">
+                      📍 {mapItem.address}
+                    </span>
+                  )}
+                  <span className="text-[10px] text-emerald-400/90 font-mono flex items-center gap-1 mt-auto pt-1">
+                    <span>เปิดนำทางบน Google Maps</span>
+                    <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Web Grounding References (like in the video) */}
         {!isUser && message.sources && message.sources.length > 0 && (

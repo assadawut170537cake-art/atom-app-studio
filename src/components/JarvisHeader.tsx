@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AtomOrb, OrbState, CorePersona } from './JarvisOrb';
 import { VoiceEmotion } from '../utils/audio';
-import { Volume2, VolumeX, Settings, Smartphone, Monitor, ShieldCheck, Wifi, BatteryCharging, Radio, Sparkles, AlertCircle, Smile, Target, Zap, Download, Rocket, Network } from 'lucide-react';
+import { Volume2, VolumeX, Settings, Smartphone, Monitor, ShieldCheck, Wifi, BatteryCharging, Radio, Sparkles, AlertCircle, Smile, Target, Zap, Download, Rocket, Network, Brain, Database } from 'lucide-react';
 
 interface AtomHeaderProps {
   orbState: OrbState;
@@ -15,6 +15,7 @@ interface AtomHeaderProps {
   onOpenInstall?: () => void;
   onOpenUseDeploy?: () => void;
   onOpenEcosystem?: () => void;
+  onOpenSupermemory?: () => void;
   isPhoneFrame: boolean;
   onTogglePhoneFrame: () => void;
 }
@@ -31,6 +32,7 @@ export const JarvisHeader: React.FC<AtomHeaderProps> = ({
   onOpenInstall,
   onOpenUseDeploy,
   onOpenEcosystem,
+  onOpenSupermemory,
   isPhoneFrame,
   onTogglePhoneFrame,
 }) => {
@@ -175,6 +177,16 @@ export const JarvisHeader: React.FC<AtomHeaderProps> = ({
               title="เชื่อมต่อกับแอป ATOM Mobile (.apk) / ข้อมูล Endpoint"
             >
               <Smartphone className="w-4 h-4" />
+            </button>
+          )}
+
+          {onOpenSupermemory && (
+            <button
+              onClick={onOpenSupermemory}
+              className="p-1.5 rounded-lg bg-cyan-950/70 hover:bg-cyan-900/80 text-cyan-300 border border-cyan-500/40 hover:border-cyan-400 transition-colors"
+              title="เปิด Supermemory Manager (จัดการความจำ jarvis_core / jarvis_ideas)"
+            >
+              <Brain className="w-4 h-4 text-cyan-400" />
             </button>
           )}
 

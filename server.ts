@@ -11,7 +11,19 @@ dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+// Parse CLI arguments (e.g. --port 3000)
+const argv = process.argv.slice(2);
+const portFlagIndex = argv.indexOf('--port');
+const cliPort = portFlagIndex !== -1 && argv[portFlagIndex + 1] ? Number(argv[portFlagIndex + 1]) : null;
+
+// In AI Studio / Cloud Run container architecture:
+// Nginx is the public reverse-proxy listening on NGINX_PORT (8080 or process.env.PORT) and forwards to port 3000.
+// Therefore, the Node application MUST listen on port 3000 (DEFAULT_APP_PORT) and avoid port 8080 (which Nginx already owns).
+const PORT = cliPort || (
+  process.env.DEFAULT_APP_PORT
+    ? Number(process.env.DEFAULT_APP_PORT)
+    : (process.env.PORT && process.env.PORT !== '8080' ? Number(process.env.PORT) : 3000)
+);
 
 const ECOSYSTEM_ROOT = path.join(__dirname, 'atom-ecosystem');
 const PERSONAS_DIR = path.join(ECOSYSTEM_ROOT, 'config', 'personas-legacy');
@@ -111,18 +123,42 @@ const localMemoryStore: LocalMemoryRecord[] = [
     id: 'init-core-1',
     containerTag: 'jarvis_core',
     content: 'เชื่อมต่อระบบ J.A.R.V.I.S., F.R.I.D.A.Y. และ ATOM สำเร็จเรียบร้อย บอสอัษฎาวุธ เมืองซอง (ลูกพี่/บอส) สั่งการผ่านระบบเสียงและ UI',
-    createdAt: new Date().toISOString(),
+    metadata: { priority: 'High', source: 'system_core' },
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    id: 'init-core-2',
+    containerTag: 'jarvis_core',
+    content: 'ประวัติคำสั่งล่าสุด: รันการทดสอบและวิเคราะห์โค้ด FastAPI + React แบบ Full-Stack พร้อมระบบเสียงภาษาไทย',
+    metadata: { priority: 'Medium', type: 'command_history' },
+    createdAt: new Date(Date.now() - 1800000).toISOString(),
+  },
+  {
+    id: 'init-ideas-1',
+    containerTag: 'jarvis_ideas',
+    content: 'ไอเดียสดหน้างาน: เชื่อมต่อเซ็นเซอร์ IoT หน้างานก่อสร้างเข้ากับ ATOM Mobile ให้บอสคุยสอบถามอุณหภูมิและความคืบหน้าได้ทันที',
+    metadata: { priority: 'High', status: 'pending_triage' },
+    createdAt: new Date(Date.now() - 1200000).toISOString(),
+  },
+  {
+    id: 'init-ideas-2',
+    containerTag: 'jarvis_ideas',
+    content: 'ไอเดียปรับแต่ง: เพิ่มหน้าสรุปรายงานรายสัปดาห์ (Weekly Executive Briefing) สไตล์ J.A.R.V.I.S.',
+    metadata: { priority: 'Low', status: 'backlog' },
+    createdAt: new Date(Date.now() - 600000).toISOString(),
   },
   {
     id: 'init-knowledge-1',
     containerTag: 'jarvis_knowledge',
     content: 'A.T.O.M. Master Blueprint v7.0: สถาปัตยกรรม Tri-Core Titans (ATOM Dynamic Front, FRIDAY Orchestrator, ULTRON Heavy Coder)',
+    metadata: { priority: 'Medium' },
     createdAt: new Date().toISOString(),
   },
   {
     id: 'init-user-1',
     containerTag: 'user_assadawut',
     content: 'ข้อมูลลูกพี่: อัษฎาวุธ เมืองซอง. Tech Stack: Python, FastAPI, TypeScript, React, Kotlin. พิกัดศูนย์บัญชาการ: สมุทรปราการ (เทพารักษ์). กฎเหล็ก: โค้ดมาตรฐานสูง พร้อมรัน ปลอดภัย',
+    metadata: { priority: 'High' },
     createdAt: new Date().toISOString(),
   },
 ];
@@ -169,11 +205,16 @@ async function commitToSupermemory(containerTag: string, content: string, metada
     throw new Error(`Invalid containerTag format: ${containerTag}`);
   }
 
+  const recordMetadata = {
+    ...metadata,
+    priority: metadata?.priority || 'Medium',
+  };
+
   localMemoryStore.push({
     id: `mem-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     containerTag,
     content,
-    metadata,
+    metadata: recordMetadata,
     createdAt: new Date().toISOString(),
   });
 
@@ -468,6 +509,9 @@ async function generateTTSAudio(
 function generateSuggestions(userMsg: string, aiMsg: string): string[] {
   const msgLower = (userMsg + ' ' + aiMsg).toLowerCase();
 
+  if (/(แผนที่|แมป|maps?|พิกัด|สถานที่|ร้านอาหาร|คาเฟ่|ทางไป|ใกล้ฉัน|แถวนี้|อยู่ที่ไหน|เดินทาง)/i.test(msgLower)) {
+    return ['แนะนำร้านอาหารใกล้ฉันบน Google Maps', 'ขอเส้นทางและเวลาเดินทาง', 'หาคาเฟ่บรรยากาศดีสำหรับนั่งทำงาน', 'ปักหมุดสถานที่ยอดนิยมบน Google Maps'];
+  }
   if (msgLower.includes('fastapi') || msgLower.includes('backend') || msgLower.includes('api')) {
     return ['ขอดูตัวอย่าง Code ครับ', 'มีโค้ดอยู่แล้ว เดี๋ยวส่งให้', 'วิธีเชื่อมต่อกับ Database', 'ช่วยเขียน Dockerfile ให้ด้วย'];
   }
@@ -579,12 +623,66 @@ async function processAtomInteraction(reqBody: any) {
     ).catch(() => {});
   }
 
+  // Check if query is Maps/Location-related
+  const isMapsQuery = /(แผนที่|แมป|maps?|พิกัด|สถานที่|ร้านอาหาร|คาเฟ่|ทางไป|ใกล้ฉัน|แถวนี้|อยู่ที่ไหน|เดินทาง|กทม|กรุงเทพ|สมุทรปราการ|nearby|location|direction|place)/i.test(promptText);
+
+  // Configure Google Grounding Tools (Google Maps or Google Search)
+  const groundingTools: any[] = [];
+  let groundingToolConfig: any = undefined;
+
+  if (isMapsQuery) {
+    // Google Maps Grounding with location retrieval
+    groundingTools.push({ googleMaps: {} });
+    const clientLatLng = reqBody.latLng || reqBody.location;
+    groundingToolConfig = {
+      retrievalConfig: {
+        latLng: clientLatLng || {
+          latitude: 13.5991, // Samut Prakan / Thepharak (บอส Assadawut HQ)
+          longitude: 100.5968,
+        },
+      },
+    };
+  } else {
+    // Google Search Grounding
+    groundingTools.push({ googleSearch: {} });
+  }
+
+  // Check if prompt is an image generation request
+  const isImageRequest = /(สร้างรูป|วาดรูป|gen(erate)?\s*image|สร้างภาพ|วาดภาพ)/i.test(promptText);
+  let generatedImageUrl: string | null = null;
+  if (isImageRequest) {
+    try {
+      const imgRes = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-image',
+        contents: {
+          parts: [{ text: promptText }],
+        },
+        config: {
+          imageConfig: {
+            aspectRatio: '1:1',
+            imageSize: '1K',
+          },
+        },
+      });
+      const parts = imgRes?.candidates?.[0]?.content?.parts || [];
+      for (const p of parts) {
+        if (p.inlineData?.data) {
+          generatedImageUrl = `data:${p.inlineData.mimeType || 'image/png'};base64,${p.inlineData.data}`;
+          break;
+        }
+      }
+    } catch (imgErr: any) {
+      console.warn('Image generation attempt notice:', imgErr?.message);
+    }
+  }
+
   // Call Gemini model with automatic retry on 503/429
   let rawResponseText = '';
   let sources: { title: string; uri: string }[] = [];
+  let mapsSources: { title: string; uri: string; address?: string; reviewSnippets?: string[] }[] = [];
 
   const callWithRetry = async () => {
-    const modelsToTry = ['gemini-flash-latest', 'gemini-3.1-flash-lite', 'gemini-3.8-flash'];
+    const modelsToTry = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
     for (const model of modelsToTry) {
       for (let attempt = 0; attempt < 2; attempt++) {
         try {
@@ -593,6 +691,8 @@ async function processAtomInteraction(reqBody: any) {
             contents,
             config: {
               systemInstruction: dynamicInstruction,
+              tools: groundingTools,
+              ...(groundingToolConfig ? { toolConfig: groundingToolConfig } : {}),
             },
           });
         } catch (err: any) {
@@ -614,7 +714,12 @@ async function processAtomInteraction(reqBody: any) {
         }
       }
     }
-    throw new Error('All Gemini model fallbacks were temporarily unavailable');
+    // Fallback without tools if tools temporarily failed
+    return await ai.models.generateContent({
+      model: 'gemini-flash-latest',
+      contents,
+      config: { systemInstruction: dynamicInstruction },
+    });
   };
 
   try {
@@ -623,12 +728,27 @@ async function processAtomInteraction(reqBody: any) {
 
     const groundingChunks = response?.candidates?.[0]?.groundingMetadata?.groundingChunks;
     if (groundingChunks && Array.isArray(groundingChunks)) {
-      sources = groundingChunks
-        .map((c: any) => ({
-          title: c?.web?.title || 'Web Reference',
-          uri: c?.web?.uri || '',
-        }))
-        .filter((s: any) => s.uri);
+      for (const c of groundingChunks) {
+        if (c?.web?.uri) {
+          sources.push({
+            title: c.web.title || 'Web Reference',
+            uri: c.web.uri,
+          });
+        }
+        if (c?.maps?.uri || c?.maps?.title) {
+          const mapsObj = c.maps as any;
+          const reviewList = Array.isArray(mapsObj.placeAnswerSources?.reviewSnippets)
+            ? mapsObj.placeAnswerSources.reviewSnippets.map((s: any) => typeof s === 'string' ? s : s?.snippet || s?.text || String(s))
+            : undefined;
+
+          mapsSources.push({
+            title: mapsObj.title || 'สถานที่บน Google Maps',
+            uri: mapsObj.uri || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsObj.title || '')}`,
+            address: mapsObj.address || mapsObj.formattedAddress,
+            reviewSnippets: reviewList,
+          });
+        }
+      }
     }
   } catch (genError: any) {
     console.error('Gemini generation error, trying emergency response:', genError);
@@ -690,6 +810,8 @@ async function processAtomInteraction(reqBody: any) {
     ttsFallback,
     suggestions,
     sources,
+    mapsSources: mapsSources.length > 0 ? mapsSources : undefined,
+    imageUrl: generatedImageUrl || undefined,
     spokenText: extractSpokenText(cleanResponseText),
     handoff: detectedHandoff || undefined,
     persona: activePersona,
@@ -1090,6 +1212,85 @@ app.get('/api/supermemory/list', (req, res) => {
   res.json({ memories: localMemoryStore });
 });
 
+// Delete memory item by ID
+app.delete('/api/supermemory/documents/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const index = localMemoryStore.findIndex((m) => m.id === id);
+    const targetMem = index !== -1 ? localMemoryStore[index] : null;
+
+    if (index !== -1) {
+      localMemoryStore.splice(index, 1);
+    }
+
+    if (SUPERMEMORY_API_KEY && targetMem) {
+      try {
+        await fetch(`${SUPERMEMORY_BASE_URL}/v3/documents/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${SUPERMEMORY_API_KEY}`,
+          },
+        });
+      } catch (err: any) {
+        console.warn('Remote Supermemory delete error:', err.message);
+      }
+    }
+
+    res.json({ success: true, id, message: 'ลบข้อมูลหน่วยความจำสำเร็จแล้ว' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Fallback POST delete for browsers and client calls
+app.post('/api/supermemory/delete', async (req, res) => {
+  try {
+    const { id, content, containerTag } = req.body;
+    if (!id && !content) {
+      return res.status(400).json({ error: 'id or content is required' });
+    }
+
+    let removed = false;
+    if (id) {
+      const index = localMemoryStore.findIndex((m) => m.id === id);
+      if (index !== -1) {
+        localMemoryStore.splice(index, 1);
+        removed = true;
+      }
+      if (SUPERMEMORY_API_KEY) {
+        try {
+          await fetch(`${SUPERMEMORY_BASE_URL}/v3/documents/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${SUPERMEMORY_API_KEY}`,
+            },
+          });
+          removed = true;
+        } catch (e) {}
+      }
+    } else if (content && containerTag) {
+      removed = await forgetMatchingSupermemory(containerTag, content);
+    }
+
+    res.json({ success: true, removed });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get recent command history saved in jarvis_core
+app.get('/api/supermemory/command-history', (req, res) => {
+  try {
+    const history = localMemoryStore
+      .filter((m) => m.containerTag === SUPERMEMORY_TAGS.CORE && m.metadata?.type === 'command_history')
+      .slice(-20)
+      .map((m) => m.metadata?.prompt || m.content.replace(/^\[COMMAND_HISTORY\]:\s*/, ''));
+    res.json({ history });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Chat endpoint (web client standard)
 app.post('/api/chat', async (req, res) => {
   try {
@@ -1192,19 +1393,92 @@ app.post('/api/chat/stream', async (req, res) => {
       res.write(`data: ${JSON.stringify({ handoff: detectedHandoff, persona: activePersona, done: false })}\n\n`);
     }
 
-    const streamResponse = await ai.models.generateContentStream({
-      model: 'gemini-flash-latest',
-      contents,
-      config: {
-        systemInstruction: dynamicInstruction,
-      },
-    });
+    const isMapsQuery = /(แผนที่|แมป|maps?|พิกัด|สถานที่|ร้านอาหาร|คาเฟ่|ทางไป|ใกล้ฉัน|แถวนี้|อยู่ที่ไหน|เดินทาง|กทม|กรุงเทพ|สมุทรปราการ|nearby|location|direction|place)/i.test(promptText);
+    const streamTools: any[] = [];
+    let streamToolConfig: any = undefined;
+
+    if (isMapsQuery) {
+      streamTools.push({ googleMaps: {} });
+      const clientLatLng = req.body?.latLng || req.body?.location;
+      streamToolConfig = {
+        retrievalConfig: {
+          latLng: clientLatLng || {
+            latitude: 13.5991, // Samut Prakan / Thepharak (บอส Assadawut HQ)
+            longitude: 100.5968,
+          },
+        },
+      };
+    } else {
+      streamTools.push({ googleSearch: {} });
+    }
+
+    let streamResponse: any;
+    const streamModels = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
+    for (const sModel of streamModels) {
+      try {
+        streamResponse = await ai.models.generateContentStream({
+          model: sModel,
+          contents,
+          config: {
+            systemInstruction: dynamicInstruction,
+            tools: streamTools,
+            ...(streamToolConfig ? { toolConfig: streamToolConfig } : {}),
+          },
+        });
+        break;
+      } catch (streamErr: any) {
+        console.warn(`Streaming attempt with ${sModel} failed, trying next:`, streamErr?.message);
+      }
+    }
+
+    if (!streamResponse) {
+      streamResponse = await ai.models.generateContentStream({
+        model: 'gemini-flash-latest',
+        contents,
+        config: {
+          systemInstruction: dynamicInstruction,
+        },
+      });
+    }
 
     let fullText = '';
+    const webSources: any[] = [];
+    const mapsSources: any[] = [];
+
     for await (const chunk of streamResponse) {
       const chunkText = chunk.text || '';
       fullText += chunkText;
-      res.write(`data: ${JSON.stringify({ chunk: chunkText, done: false, handoff: detectedHandoff || undefined, persona: activePersona })}\n\n`);
+
+      const gChunks = chunk.candidates?.[0]?.groundingMetadata?.groundingChunks;
+      if (gChunks && Array.isArray(gChunks)) {
+        for (const c of gChunks) {
+          if (c?.web?.uri) {
+            webSources.push({ title: c.web.title || 'Web Reference', uri: c.web.uri });
+          }
+          if (c?.maps?.uri || c?.maps?.title) {
+            const mapsObj = c.maps as any;
+            const reviewList = Array.isArray(mapsObj.placeAnswerSources?.reviewSnippets)
+              ? mapsObj.placeAnswerSources.reviewSnippets.map((s: any) => typeof s === 'string' ? s : s?.snippet || s?.text || String(s))
+              : undefined;
+
+            mapsSources.push({
+              title: mapsObj.title || 'สถานที่บน Google Maps',
+              uri: mapsObj.uri || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsObj.title || '')}`,
+              address: mapsObj.address || mapsObj.formattedAddress,
+              reviewSnippets: reviewList,
+            });
+          }
+        }
+      }
+
+      res.write(`data: ${JSON.stringify({
+        chunk: chunkText,
+        done: false,
+        handoff: detectedHandoff || undefined,
+        persona: activePersona,
+        sources: webSources.length > 0 ? webSources : undefined,
+        mapsSources: mapsSources.length > 0 ? mapsSources : undefined,
+      })}\n\n`);
     }
 
     // 3. COMMIT STEP: Commit key decisions or milestones to jarvis_core with dreaming: "instant"
@@ -1218,7 +1492,15 @@ app.post('/api/chat/stream', async (req, res) => {
     }
 
     const suggestions = generateSuggestions(promptText, fullText);
-    res.write(`data: ${JSON.stringify({ done: true, fullText, suggestions, handoff: detectedHandoff || undefined, persona: activePersona })}\n\n`);
+    res.write(`data: ${JSON.stringify({
+      done: true,
+      fullText,
+      suggestions,
+      handoff: detectedHandoff || undefined,
+      persona: activePersona,
+      sources: webSources.length > 0 ? webSources : undefined,
+      mapsSources: mapsSources.length > 0 ? mapsSources : undefined,
+    })}\n\n`);
     res.end();
   } catch (err: any) {
     console.error('Streaming error:', err);
@@ -1318,22 +1600,24 @@ async function startServer() {
   const httpServer = http.createServer(app);
 
   if (process.env.NODE_ENV !== 'production') {
-    const isCloudRun = !!process.env.K_SERVICE || !!process.env.APP_URL;
+    // In AI Studio iframe preview, HMR WebSockets are disabled.
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
-        hmr: process.env.DISABLE_HMR === 'true' ? false : {
-          server: httpServer,
-          clientPort: isCloudRun ? 443 : PORT,
-        },
+        hmr: false,
+        ws: false,
       },
       appType: 'spa',
     });
     app.use(vite.middlewares);
   } else {
-    app.use(express.static(path.join(__dirname, 'dist')));
+    const distPath = path.join(__dirname, 'dist');
+    app.use(express.static(distPath));
     app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+      if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ error: 'Endpoint not found' });
+      }
+      res.sendFile(path.join(distPath, 'index.html'));
     });
   }
 

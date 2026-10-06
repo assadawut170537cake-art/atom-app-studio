@@ -9,13 +9,25 @@ import { InstallModal } from './components/InstallModal';
 import { UseDeployModal } from './components/UseDeployModal';
 import { BossProfileModal, BossProfile } from './components/BossProfileModal';
 import { EcosystemModal } from './components/EcosystemModal';
+import { SupermemoryManager } from './components/SupermemoryManager';
 import { OrbState, CorePersona } from './components/JarvisOrb';
 import { atomAudio, VoiceEmotion } from './utils/audio';
 import { jarvisSpeech } from './utils/speechRecognition';
 import { streamingSpeech } from './utils/streamingSpeech';
-import { Sparkles, Terminal, Shield, Zap, Brain } from 'lucide-react';
+import { getSavedAccentColor, saveAccentColor, applyAccentColorToDOM, AccentColorId } from './utils/theme';
+import { Sparkles, Terminal, Shield, Zap, Brain, Database } from 'lucide-react';
 
 export default function App() {
+  const [accentColor, setAccentColor] = useState<AccentColorId>(() => getSavedAccentColor());
+
+  useEffect(() => {
+    applyAccentColorToDOM(accentColor);
+  }, [accentColor]);
+
+  const handleSelectAccentColor = (color: AccentColorId) => {
+    setAccentColor(color);
+    saveAccentColor(color);
+  };
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome-1',
@@ -49,6 +61,7 @@ export default function App() {
   const [isInstallOpen, setIsInstallOpen] = useState(false);
   const [isUseDeployOpen, setIsUseDeployOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSupermemoryOpen, setIsSupermemoryOpen] = useState(false);
   const [bossProfile, setBossProfile] = useState<BossProfile | null>(() => {
     try {
       const saved = localStorage.getItem('atom_boss_profile');
@@ -72,6 +85,25 @@ export default function App() {
   const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
   const [liveTranscript, setLiveTranscript] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+
+  // Capture user's geolocation for accurate Google Maps Grounding
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setUserLocation({
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          });
+        },
+        () => {
+          // User declined or unavailable, backend defaults to Samut Prakan / Bangkok HQ
+        },
+        { enableHighAccuracy: false, timeout: 6000 }
+      );
+    }
+  }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const continuousModeRef = useRef(continuousMode);
@@ -265,6 +297,7 @@ export default function App() {
           agentRole,
           persona: activePersona,
           bossProfile: activeProfile,
+          latLng: userLocation || undefined,
         }),
       });
 
@@ -317,12 +350,39 @@ export default function App() {
                 );
               }
 
+              if (parsed.sources || parsed.mapsSources) {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === aiMessageId
+                      ? {
+                          ...m,
+                          sources: parsed.sources || m.sources,
+                          mapsSources: parsed.mapsSources || m.mapsSources,
+                        }
+                      : m
+                  )
+                );
+              }
+
               if (parsed.done) {
                 if (parsed.handoff && parsed.handoff !== activePersona) {
                   handleSwitchPersona(parsed.handoff);
                 }
                 if (parsed.suggestions && Array.isArray(parsed.suggestions)) {
                   setSuggestions(parsed.suggestions);
+                }
+                if (parsed.sources || parsed.mapsSources) {
+                  setMessages((prev) =>
+                    prev.map((m) =>
+                      m.id === aiMessageId
+                        ? {
+                            ...m,
+                            sources: parsed.sources || m.sources,
+                            mapsSources: parsed.mapsSources || m.mapsSources,
+                          }
+                        : m
+                    )
+                  );
                 }
               }
             } catch (e) {}
@@ -367,6 +427,7 @@ export default function App() {
             enableVoice: autoSpeak,
             persona: activePersona,
             bossProfile: activeProfile,
+            latLng: userLocation || undefined,
           }),
         });
         const data = await res.json();
@@ -376,7 +437,16 @@ export default function App() {
         setMessages((prev) =>
           prev.map((m) =>
             m.id === aiMessageId
-              ? { ...m, text: data.text, isStreaming: false, emotion: data.emotion, audio: data.audio }
+              ? {
+                  ...m,
+                  text: data.text,
+                  isStreaming: false,
+                  emotion: data.emotion,
+                  audio: data.audio,
+                  sources: data.sources,
+                  mapsSources: data.mapsSources,
+                  imageUrl: data.imageUrl,
+                }
               : m
           )
         );
@@ -487,6 +557,7 @@ export default function App() {
           onOpenInstall={() => setIsInstallOpen(true)}
           onOpenUseDeploy={() => setIsUseDeployOpen(true)}
           onOpenEcosystem={() => setIsEcosystemOpen(true)}
+          onOpenSupermemory={() => setIsSupermemoryOpen(true)}
           isPhoneFrame={isPhoneFrame}
           onTogglePhoneFrame={() => setIsPhoneFrame(!isPhoneFrame)}
         />
@@ -518,15 +589,27 @@ export default function App() {
             ))}
           </div>
 
-          {/* Boss Profile & Memory Button */}
-          <button
-            onClick={() => setIsProfileOpen(true)}
-            className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/60 text-[10px] font-medium shrink-0 ml-auto transition-all active:scale-95 shadow-sm"
-            title="ตั้งค่า Profile, ความชอบ และ Memory ของบอส"
-          >
-            <Brain className="w-3 h-3 text-cyan-400 animate-pulse" />
-            <span>Profile & Memory</span>
-          </button>
+          <div className="flex items-center gap-1.5 ml-auto shrink-0">
+            {/* Supermemory Manager Button */}
+            <button
+              onClick={() => setIsSupermemoryOpen(true)}
+              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/60 text-[10px] font-medium transition-all active:scale-95 shadow-sm"
+              title="เปิด Supermemory Manager (จัดการความจำ jarvis_core และ jarvis_ideas)"
+            >
+              <Database className="w-3 h-3 text-cyan-400" />
+              <span>Supermemory</span>
+            </button>
+
+            {/* Boss Profile & Memory Button */}
+            <button
+              onClick={() => setIsProfileOpen(true)}
+              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-900/80 border border-slate-700/60 text-slate-300 hover:text-cyan-300 hover:bg-slate-800/80 text-[10px] font-medium transition-all active:scale-95 shadow-sm"
+              title="ตั้งค่า Profile, ความชอบ และ Memory ของบอส"
+            >
+              <Brain className="w-3 h-3 text-cyan-400" />
+              <span className="hidden sm:inline">Profile</span>
+            </button>
+          </div>
         </div>
 
         {/* Chat Feed */}
@@ -583,6 +666,7 @@ export default function App() {
           isProcessing={isProcessing}
           onClearHistory={handleClearHistory}
           onInsertCodeTemplate={(c) => handleSendMessage(c)}
+          onOpenSupermemory={() => setIsSupermemoryOpen(true)}
         />
       </div>
 
@@ -600,6 +684,8 @@ export default function App() {
         onToggleWakeWord={() => setIsWakeWordActive(!isWakeWordActive)}
         selectedEmotionMode={selectedEmotionMode}
         onSelectEmotionMode={(m) => setSelectedEmotionMode(m)}
+        accentColor={accentColor}
+        onSelectAccentColor={handleSelectAccentColor}
       />
 
       {/* Connect Mobile APK Modal */}
@@ -625,6 +711,12 @@ export default function App() {
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
         onSaveProfile={(p) => setBossProfile(p)}
+      />
+
+      {/* Supermemory Manager Modal */}
+      <SupermemoryManager
+        isOpen={isSupermemoryOpen}
+        onClose={() => setIsSupermemoryOpen(false)}
       />
 
       {/* A.T.O.M. Ecosystem Master Hub Modal */}
