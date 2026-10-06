@@ -1,0 +1,72 @@
+
+> Configure project :app
+WARNING: The option setting 'android.overridePathCheck=true' is experimental.
+The current default is 'false'.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:checkDebugAarMetadata FAILED
+
+[Incubating] Problems report is available at: file:///J:/%E0%B9%82%E0%B8%9B%E0%B8%A3%E0%B9%80%E0%B8%88%E0%B8%84%E0%B8%AD%E0%B8%B0%E0%B8%95%E0%B8%AD%E0%B8%A1/apps/kotlin/atom_mobile/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Cannot invoke "java.util.List.get(int)" because "path" is null
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to generate a Build Scan (Powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+* Exception is:
+java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because "path" is null
+	at org.gradle.internal.resolve.ModuleVersionResolveException.getMessage(ModuleVersionResolveException.java:124)
+	at org.gradle.internal.problems.failure.DefaultFailure.getHeader(DefaultFailure.java:62)
+	at org.gradle.internal.problems.failure.FailurePrinter$Job.printRecursively(FailurePrinter.java:68)
+	at org.gradle.internal.problems.failure.FailurePrinter$Job.appendCauses(FailurePrinter.java:91)
+	at org.gradle.internal.problems.failure.FailurePrinter$Job.printRecursively(FailurePrinter.java:76)
+	at org.gradle.internal.problems.failure.FailurePrinter$Job.appendCauses(FailurePrinter.java:88)
+	at org.gradle.internal.problems.failure.FailurePrinter$Job.printRecursively(FailurePrinter.java:76)
+	at org.gradle.internal.problems.failure.FailurePrinter$Job.print(FailurePrinter.java:59)
+	at org.gradle.internal.problems.failure.FailurePrinter.print(FailurePrinter.java:42)
+	at org.gradle.internal.problems.failure.FailurePrinter.printToString(FailurePrinter.java:37)
+	at org.gradle.internal.build.event.types.DefaultFailure.fromFailure(DefaultFailure.java:84)
+	at org.gradle.internal.build.event.types.DefaultFailure.fromThrowable(DefaultFailure.java:78)
+	at org.gradle.internal.build.event.types.DefaultFailure.fromThrowable(DefaultFailure.java:73)
+	at org.gradle.tooling.internal.provider.runner.TaskOperationMapper.toTaskResult(TaskOperationMapper.java:136)
+	at org.gradle.tooling.internal.provider.runner.TaskOperationMapper.createFinishedEvent(TaskOperationMapper.java:115)
+	at org.gradle.tooling.internal.provider.runner.TaskOperationMapper.createFinishedEvent(TaskOperationMapper.java:57)
+	at org.gradle.tooling.internal.provider.runner.ClientBuildEventGenerator$EnabledOperation.generateFinishEvent(ClientBuildEventGenerator.java:155)
+	at org.gradle.tooling.internal.provider.runner.ClientBuildEventGenerator.finished(ClientBuildEventGenerator.java:111)
+	at org.gradle.internal.operations.DefaultBuildOperationListenerManager$ProgressShieldingBuildOperationListener.finished(DefaultBuildOperationListenerManager.java:109)
+	at org.gradle.internal.operations.DefaultBuildOperationListenerManager$1.finished(DefaultBuildOperationListenerManager.java:54)
+	at org.gradle.internal.operations.BuildOperationProgressEventListenerAdapter.stop(BuildOperationProgressEventListenerAdapter.java:78)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$BuildOperationTrackingListener.stop(DefaultBuildOperationRunner.java:248)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:73)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:45)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:355)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:342)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:338)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:84)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:338)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:327)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:459)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:376)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.1.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 3s
+1 actionable task: 1 executed

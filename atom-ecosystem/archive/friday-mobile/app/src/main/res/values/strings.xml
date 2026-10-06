@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FRIDAY</string>
+    <string name="tab_workspace">เวิร์กสเปซ</string>
+    <string name="tab_editor">เขียน</string>
+    <string name="tab_chat">แชท</string>
+    <string name="tab_system">ระบบ</string>
+    <string name="spec_title_hint">ชื่อสเปกค่ะ</string>
+    <string name="spec_content_hint">เขียนรายละเอียดสเปกที่นี่นะคะ...</string>
+    <string name="save">บันทึก</string>
+    <string name="delete">ลบ</string>
+    <string name="new_spec">สเปกใหม่</string>
+    <string name="no_specs">ยังไม่มีสเปกค่ะ</string>
+    <string name="chat_hint">พิมพ์ข้อความ...</string>
+    <string name="send">ส่ง</string>
+    <string name="import_history">นำเข้าประวัติแชท</string>
+    <string name="paste_json_hint">วาง JSON จาก AI Studio ที่นี่ค่ะ</string>
+    <string name="import_start">เริ่มนำเข้า</string>
+    <string name="importing">กำลังนำเข้า...</string>
+    <string name="import_done">นำเข้าเสร็จแล้วค่ะ</string>
+    <string name="import_failed">นำเข้าไม่สำเร็จค่ะ</string>
+    <string name="pc_status">PC Workstation</string>
+    <string name="mobile_status">Mobile S10</string>
+    <string name="online">ONLINE</string>
+    <string name="offline">OFFLINE</string>
+    <string name="kill_switch">Emergency Kill Switch</string>
+    <string name="kill_confirm">หยุดระบบทั้งหมดหรือไม่คะ?</string>
+    <string name="resume_system">Resume System</string>
+    <string name="error_network">เชื่อมต่อ VPS ไม่ได้ค่ะ</string>
+    <string name="error_secret">Secret ผิด — ตรวจการตั้งค่าค่ะ</string>
+    <string name="error_service">ระบบหยุดชั่วคราวค่ะ</string>
+    <string name="error_gemini">AI ตอบไม่ได้ — ลองใหม่นะคะ</string>
+</resources>

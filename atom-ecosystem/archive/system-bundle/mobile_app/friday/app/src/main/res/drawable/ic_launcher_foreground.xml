@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- FRIDAY: วงแหวนชมพู + แกนกลาง = สไตล์ Orchestrator -->
+    <path
+        android:pathData="M54,54m-30,0a30,30 0,1 1,60 0a30,30 0,1 1,-60 0"
+        android:strokeColor="#FF6B9D"
+        android:strokeWidth="4" />
+    <path
+        android:pathData="M54,24 L54,84 M24,54 L84,54"
+        android:strokeColor="#FF6B9D"
+        android:strokeWidth="3" />
+    <path
+        android:pathData="M54,54m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"
+        android:fillColor="#FF6B9D" />
+</vector>

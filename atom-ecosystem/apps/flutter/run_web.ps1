@@ -1,0 +1,1 @@
+flutter run -d chrome --dart-define=SUPERMEMORY_API_KEY="sm_wdZDwW4LKqt62TUTyBLjNn_dpvQm2TPkHbPBD1IfymWD3E7AaGhEOlikEjcv7XPrQrmu0z5sixzJbyuACAqmxjb"

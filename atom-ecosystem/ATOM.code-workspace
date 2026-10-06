@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "ATOM"
+    }
+  ],
+  "settings": {
+    "files.watcherExclude": {
+      "**/archive/**": true,
+      "**/build/**": true,
+      "**/.gradle/**": true,
+      "**/.dart_tool/**": true
+    },
+    "search.exclude": {
+      "**/archive/**": true,
+      "**/build/**": true
+    }
+  }
+}

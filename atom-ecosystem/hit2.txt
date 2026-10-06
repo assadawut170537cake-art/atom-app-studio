@@ -1,0 +1,38 @@
+8616:2569-10-06T05:45:29.286+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Register task :app:checkDebugAarMetadata' started
+8617:2569-10-06T05:45:29.286+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Completing Build operation 'Register task :app:checkDebugAarMetadata'
+8776:2569-10-06T05:45:29.327+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Register task :app:checkReleaseAarMetadata' started
+8777:2569-10-06T05:45:29.327+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Completing Build operation 'Register task :app:checkReleaseAarMetadata'
+8916:2569-10-06T05:45:29.360+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Register task :app:checkDebugAndroidTestAarMetadata' started
+8917:2569-10-06T05:45:29.361+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Completing Build operation 'Register task :app:checkDebugAndroidTestAarMetadata'
+11088:2569-10-06T05:45:29.286+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Register task :app:checkDebugAarMetadata' completed
+11168:2569-10-06T05:45:29.327+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Register task :app:checkReleaseAarMetadata' completed
+11238:2569-10-06T05:45:29.361+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Register task :app:checkDebugAndroidTestAarMetadata' completed
+12825:2569-10-06T05:45:29.841+0700 [INFO] [org.gradle.execution.selection.DefaultBuildTaskSelector] Task path ':app:checkDebugAarMetadata' matched project ':app'
+12826:2569-10-06T05:45:29.842+0700 [INFO] [org.gradle.execution.DefaultTaskSelector] Task name matched 'checkDebugAarMetadata'
+12827:2569-10-06T05:45:29.842+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Realize task :app:checkDebugAarMetadata' started
+12849:2569-10-06T05:45:29.846+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Completing Build operation 'Realize task :app:checkDebugAarMetadata'
+12850:2569-10-06T05:45:29.846+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Realize task :app:checkDebugAarMetadata' completed
+12851:2569-10-06T05:45:29.846+0700 [INFO] [org.gradle.execution.TaskNameResolvingBuildTaskScheduler] Selected primary task 'checkDebugAarMetadata' from project :app
+13144:2569-10-06T05:45:29.889+0700 [INFO] [org.gradle.internal.buildevents.BuildLogger] Tasks to be executed: [task ':app:preBuild', task ':app:preDebugBuild', task ':app:checkDebugAarMetadata']
+13363:2569-10-06T05:45:29.944+0700 [INFO] [org.gradle.execution.plan.DefaultPlanExecutor] Resolve mutations for :app:checkDebugAarMetadata (Thread[#2799,Execution worker,5,main]) started.
+13366:2569-10-06T05:45:29.945+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Resolve mutations for task :app:checkDebugAarMetadata' started
+13371:2569-10-06T05:45:29.946+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Completing Build operation 'Resolve mutations for task :app:checkDebugAarMetadata'
+13372:2569-10-06T05:45:29.946+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Resolve mutations for task :app:checkDebugAarMetadata' completed
+13456:2569-10-06T05:45:29.960+0700 [DEBUG] [org.gradle.execution.plan.DefaultFinalizedExecutionPlan] Node Resolve mutations for :app:checkDebugAarMetadata completed, executed: true
+13457:2569-10-06T05:45:29.961+0700 [DEBUG] [org.gradle.execution.plan.DefaultFinalizedExecutionPlan] Node Resolve mutations for :app:checkDebugAarMetadata finished executing
+13462:2569-10-06T05:45:29.962+0700 [INFO] [org.gradle.execution.plan.DefaultPlanExecutor] :app:checkDebugAarMetadata (Thread[#2799,Execution worker,5,main]) started.
+13465:2569-10-06T05:45:29.962+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Task :app:checkDebugAarMetadata' started
+13478:2569-10-06T05:45:29.965+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Snapshot task inputs for :app:checkDebugAarMetadata' started
+13481:2569-10-06T05:45:29.965+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Snapshot inputs and outputs before executing task ':app:checkDebugAarMetadata'' started
+13564:2569-10-06T05:45:30.320+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Completing Build operation 'Snapshot inputs and outputs before executing task ':app:checkDebugAarMetadata''
+13565:2569-10-06T05:45:30.321+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Completing Build operation 'Snapshot task inputs for :app:checkDebugAarMetadata'
+13567:2569-10-06T05:45:29.963+0700 [LIFECYCLE] [class org.gradle.internal.buildevents.TaskExecutionLogger] > Task :app:checkDebugAarMetadata FAILED
+13568:2569-10-06T05:45:29.963+0700 [DEBUG] [org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter] Putting task artifact state for task ':app:checkDebugAarMetadata' into context took 0.0 secs.
+13570:2569-10-06T05:45:29.966+0700 [DEBUG] [org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep] Implementation for task ':app:checkDebugAarMetadata': com.android.build.gradle.internal.tasks.CheckAarMetadataTask_Decorated@ef7fb803eb07b63db420fc568f5cfbf2
+13571:2569-10-06T05:45:29.966+0700 [DEBUG] [org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep] Additional implementations for task ':app:checkDebugAarMetadata': [com.android.build.gradle.internal.tasks.CheckAarMetadataTask_Decorated@ef7fb803eb07b63db420fc568f5cfbf2]
+15206:2569-10-06T05:45:30.320+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Snapshot inputs and outputs before executing task ':app:checkDebugAarMetadata'' completed
+15207:2569-10-06T05:45:30.321+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Snapshot task inputs for :app:checkDebugAarMetadata' completed
+15208:2569-10-06T05:45:30.321+0700 [DEBUG] [org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter] Removed task artifact state for task ':app:checkDebugAarMetadata' from context.
+15209:2569-10-06T05:45:30.323+0700 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Task :app:checkDebugAarMetadata' completed
+15210:2569-10-06T05:45:30.323+0700 [DEBUG] [org.gradle.execution.plan.DefaultFinalizedExecutionPlan] Node :app:checkDebugAarMetadata completed, executed: true
+15211:2569-10-06T05:45:30.324+0700 [DEBUG] [org.gradle.execution.plan.DefaultFinalizedExecutionPlan] Node :app:checkDebugAarMetadata failed

@@ -1,0 +1,16 @@
+[Unit]
+Description=ATOM Core API Service
+After=network.target
+
+[Service]
+Type=simple
+User=atom
+WorkingDirectory=/opt/atom-core
+EnvironmentFile=/opt/atom-core/.env
+ExecStart=/opt/atom-core/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=always
+RestartSec=5
+MemoryLimit=500M
+
+[Install]
+WantedBy=multi-user.target

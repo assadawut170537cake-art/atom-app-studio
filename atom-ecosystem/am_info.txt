@@ -1,0 +1,89 @@
+Initialized native services in: C:\Users\CJN_assadawut17\.gradle\native
+Initialized jansi services in: C:\Users\CJN_assadawut17\.gradle\native
+Found daemon DaemonInfo{pid=41752, address=[525b5560-b59d-451c-9fff-aeeed2471061 port:60980, addresses:[/127.0.0.1]], state=Idle, lastBusy=1791173171602, context=DefaultDaemonContext[uid=e9bf54e8-41d0-4539-b53f-4566d26bc647,javaHome=C:\Program Files\Android\Android Studio\jbr,javaVersion=25,javaVendor=JetBrains s.r.o.,daemonRegistryDir=C:\Users\CJN_assadawut17\.gradle\daemon,pid=41752,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=4G,-XX:ReservedCodeCacheSize=512m,-XX:+HeapDumpOnOutOfMemoryError,-Xmx8G,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Program Files\Microsoft\jdk-21.0.12.101-hotspot (no JDK specified, using current Java home), daemonOpts=[-Xmx2048m, -Dfile.encoding=UTF-8, -Duser.country=TH, -Duser.language=th, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=e9bf54e8-41d0-4539-b53f-4566d26bc647,javaHome=C:\Program Files\Android\Android Studio\jbr,javaVersion=25,javaVendor=JetBrains s.r.o.,daemonRegistryDir=C:\Users\CJN_assadawut17\.gradle\daemon,pid=41752,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=4G,-XX:ReservedCodeCacheSize=512m,-XX:+HeapDumpOnOutOfMemoryError,-Xmx8G,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=19736, address=[0a6249b7-1039-48e5-a695-1660d50eb2b2 port:61843, addresses:[/127.0.0.1]], state=Idle, lastBusy=1791164837805, context=DefaultDaemonContext[uid=53277f37-157e-49fa-8c67-2edcbe498ec2,javaHome=C:\Program Files\Android\Android Studio\jbr,javaVersion=25,javaVendor=JetBrains s.r.o.,daemonRegistryDir=C:\Users\CJN_assadawut17\.gradle\daemon,pid=19736,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-Xmx2048m,-Dfile.encoding=UTF-8,-Duser.country=TH,-Duser.language=th,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Program Files\Microsoft\jdk-21.0.12.101-hotspot (no JDK specified, using current Java home), daemonOpts=[-Xmx2048m, -Dfile.encoding=UTF-8, -Duser.country=TH, -Duser.language=th, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=53277f37-157e-49fa-8c67-2edcbe498ec2,javaHome=C:\Program Files\Android\Android Studio\jbr,javaVersion=25,javaVendor=JetBrains s.r.o.,daemonRegistryDir=C:\Users\CJN_assadawut17\.gradle\daemon,pid=19736,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-Xmx2048m,-Dfile.encoding=UTF-8,-Duser.country=TH,-Duser.language=th,-Duser.variant]
+
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=29312, address=[c058fb36-11ab-4d99-8ed9-034a88483379 port:52438, addresses:[/127.0.0.1]], state=Idle, lastBusy=1791237717814, context=DefaultDaemonContext[uid=e174108d-bd21-4e2d-b1fc-e7645ea206fe,javaHome=C:\Program Files\Microsoft\jdk-21.0.12.101-hotspot,javaVersion=21,javaVendor=Microsoft,daemonRegistryDir=C:\Users\CJN_assadawut17\.gradle\daemon,pid=29312,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=4G,-XX:ReservedCodeCacheSize=512m,-XX:+HeapDumpOnOutOfMemoryError,-Xmx8G,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+At least one daemon option is different.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Program Files\Microsoft\jdk-21.0.12.101-hotspot (no JDK specified, using current Java home), daemonOpts=[-Xmx2048m, -Dfile.encoding=UTF-8, -Duser.country=TH, -Duser.language=th, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=e174108d-bd21-4e2d-b1fc-e7645ea206fe,javaHome=C:\Program Files\Microsoft\jdk-21.0.12.101-hotspot,javaVersion=21,javaVendor=Microsoft,daemonRegistryDir=C:\Users\CJN_assadawut17\.gradle\daemon,pid=29312,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:MaxMetaspaceSize=4G,-XX:ReservedCodeCacheSize=512m,-XX:+HeapDumpOnOutOfMemoryError,-Xmx8G,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+The client will now receive all logging from the daemon (pid: 15288). The daemon log file: C:\Users\CJN_assadawut17\.gradle\daemon\9.1.0\daemon-15288.out.log
+Starting 10th build in daemon [uptime: 45 mins 33.36 secs, performance: 100%, GC rate: 0.00/s, heap usage: 0% of 2 GiB]
+Using 48 worker leases.
+Now considering [J:\โปรเจคอะตอม\apps\kotlin\atom_mobile] as hierarchies to watch
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Settings evaluated using settings file 'J:\โปรเจคอะตอม\apps\kotlin\atom_mobile\settings.gradle.kts'.
+Projects loaded. Root project using build file 'J:\โปรเจคอะตอม\apps\kotlin\atom_mobile\build.gradle.kts'.
+Included projects: [root project 'Atom Mobile', project ':app']
+
+> Configure project :
+Evaluating root project 'Atom Mobile' using build file 'J:\โปรเจคอะตอม\apps\kotlin\atom_mobile\build.gradle.kts'.
+Resolved plugin [id: 'com.android.application', version: '8.5.2', apply: false]
+Resolved plugin [id: 'org.jetbrains.kotlin.android', version: '1.9.25', apply: false]
+Resolved plugin [id: 'com.google.devtools.ksp', version: '1.9.25-1.0.20', apply: false]
+
+> Configure project :app
+Evaluating project ':app' using build file 'J:\โปรเจคอะตอม\apps\kotlin\atom_mobile\app\build.gradle.kts'.
+Resolved plugin [id: 'com.android.application']
+Resolved plugin [id: 'org.jetbrains.kotlin.android']
+Resolved plugin [id: 'com.google.devtools.ksp']
+WARNING: The option setting 'android.overridePathCheck=true' is experimental.
+The current default is 'false'.
+Using default execution profile
+Using Kotlin Gradle Plugin gradle82 variant
+All projects evaluated.
+Task path ':app:checkDebugAarMetadata' matched project ':app'
+Task name matched 'checkDebugAarMetadata'
+Selected primary task 'checkDebugAarMetadata' from project :app
+Tasks to be executed: [task ':app:preBuild', task ':app:preDebugBuild', task ':app:checkDebugAarMetadata']
+Tasks that were excluded: []
+Resolve mutations for :app:preBuild (Thread[#2639,Execution worker,5,main]) started.
+:app:preBuild (Thread[#2639,Execution worker,5,main]) started.
+
+> Task :app:preBuild UP-TO-DATE
+Skipping task ':app:preBuild' as it has no actions.
+Resolve mutations for :app:preDebugBuild (Thread[#2639,Execution worker,5,main]) started.
+:app:preDebugBuild (Thread[#2640,Execution worker Thread 2,5,main]) started.
+
+> Task :app:preDebugBuild UP-TO-DATE
+Skipping task ':app:preDebugBuild' as it has no actions.
+Resolve mutations for :app:checkDebugAarMetadata (Thread[#2640,Execution worker Thread 2,5,main]) started.
+:app:checkDebugAarMetadata (Thread[#2640,Execution worker Thread 2,5,main]) started.
+
+> Task :app:checkDebugAarMetadata FAILED
+
+[Incubating] Problems report is available at: file:///J:/%E0%B9%82%E0%B8%9B%E0%B8%A3%E0%B9%80%E0%B8%88%E0%B8%84%E0%B8%AD%E0%B8%B0%E0%B8%95%E0%B8%AD%E0%B8%A1/apps/kotlin/atom_mobile/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Cannot invoke "java.util.List.get(int)" because "path" is null
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --debug option to get more log output.
+> Run with --scan to generate a Build Scan (Powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.1.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 3s
+1 actionable task: 1 executed
+Watched directory hierarchies: [J:\โปรเจคอะตอม\apps\kotlin\atom_mobile]

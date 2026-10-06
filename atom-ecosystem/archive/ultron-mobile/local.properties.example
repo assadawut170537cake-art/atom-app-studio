@@ -1,0 +1,9 @@
+# copy เปน local.properties แลวกรอก (ไฟลจริง gitignore แลว)
+ATOM_SECRET=
+GEMINI_API_KEY=
+BASE_URL=https://assadawut-jarvis.online
+
+# --- optional (build.gradle มี default ใหแ้ละถาไมกรอก) ---
+# ATOM_BASE_URL=            # alias แทน BASE_URL ไดดวย
+# NODE_ID=MOBILE_S10
+# GEMINI_LIVE_MODEL=gemini-2.5-flash-native-audio-preview-09-2025

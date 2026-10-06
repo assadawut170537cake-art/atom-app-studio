@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Follow environment instruction: HMR is disabled in preview iframe; ignore websocket errors
+      (() => {
+        const _origError = console.error;
+        console.error = function (...args) {
+          if (
+            typeof args[0] === 'string' &&
+            (args[0].includes('[vite]') || args[0].includes('websocket') || args[0].includes('WebSocket'))
+          ) {
+            console.warn(...args);
+            return;
+          }
+          _origError.apply(console, args);
+        };
+      })();
+    </script>
+    <title>ATOM (อะตอม) - ระบบผู้ช่วยเสียง AI</title>
+    <meta name="description" content="ระบบ AI อัจฉริยะ อะตอม (ATOM) ผู้ช่วยสั่งการด้วยเสียง โต้ตอบภาษาไทยได้อย่างเป็นธรรมชาติ พร้อมโค้ดและข้อมูลแบบเรียลไทม์" />
+    <meta property="og:title" content="ATOM (อะตอม) - ระบบผู้ช่วยเสียง AI" />
+    <meta property="og:description" content="ระบบ AI อัจฉริยะ อะตอม (ATOM) ผู้ช่วยสั่งการด้วยเสียง โต้ตอบภาษาไทยได้อย่างเป็นธรรมชาติ พร้อมโค้ดและข้อมูลแบบเรียลไทม์" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#080b11" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ATOM" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Orbitron:wght@600;700;800;900&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

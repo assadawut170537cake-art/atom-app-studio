@@ -1,0 +1,5 @@
+# FRIDAY Mobile - copy to local.properties then fill in values
+# NEVER commit local.properties to git
+ATOM_SECRET=
+GEMINI_API_KEY=
+BASE_URL=https://assadawut-jarvis.online

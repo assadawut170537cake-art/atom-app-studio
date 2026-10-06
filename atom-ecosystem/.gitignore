@@ -1,0 +1,24 @@
+# Build directories
+build/
+.gradle/
+.dart_tool/
+.idea/
+__pycache__/
+*.pyc
+
+# Local configuration and properties
+local.properties
+.env
+local_user_profile.json
+
+# Binaries and outputs
+*.apk
+*.exe
+*.dll
+*.so
+*.db
+*.tmp
+
+# System files
+.DS_Store
+Thumbs.db

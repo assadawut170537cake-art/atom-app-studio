@@ -1,0 +1,6 @@
+{
+  "name": "Jarvis AI Voice Assistant",
+  "description": "ระบบ AI อัจฉริยะแบบ Jarvis ผู้ช่วยสั่งการด้วยเสียง โต้ตอบภาษาไทยได้อย่างเป็นธรรมชาติ พร้อมโค้ดและข้อมูลแบบเรียลไทม์",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
